@@ -4,14 +4,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 // const HtmlWebpackPlugin = require('html-webpack-plugin');
 // const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
-const isProd = process.env.NODE_ENV === 'production';
-
-module.exports = {
+let conf = {
     entry: './src/index.js',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, './dist'),
         filename: 'main.js',
-        publicPath: '/'
+        publicPath: 'dist/'
     },
     module: {
         rules: [
@@ -27,14 +25,14 @@ module.exports = {
                 use: [
                     {
                         loader: 'babel-loader',
-                        options: {presets: ['env']}
+                        options: {presets: ['env', 'stage-3']}
                     }
                 ]
             }
         ]
     },
-    devtool: 'inline-source-map',
     devServer: {
+        overlay: true,
         contentBase: path.resolve(__dirname, 'dist'),
         publicPath: '/',
         watchContentBase: true,
@@ -60,4 +58,12 @@ module.exports = {
         //     server: { baseDir: ['dist'] }
         // })
     ]
+};
+
+module.exports = (env, options) => {
+    let productions = options.mode === 'production';
+
+    conf.devtool = productions ? false : 'eval-sourcemap';
+
+    return conf;
 };
